@@ -13,7 +13,7 @@ user_input = st.text_area("Enter your text:")
 @st.cache_data()
 def load_model_and_tokenizer():
     model_name = "mrm8488/t5-base-finetuned-emotion"
-    tokenizer = AutoTokenizer.from_pretrained(model_name)
+    tokenizer = AutoTokenizer.from_pretrained(model_name, use_fast=False)
     model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
     return tokenizer, model
 
