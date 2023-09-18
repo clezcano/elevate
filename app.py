@@ -1,7 +1,6 @@
 import streamlit as st
 import torch
-from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
-
+from transformers import T5ForConditionalGeneration, T5Tokenizer
 # Set up Streamlit
 st.title("Emotion Detection with Transformers")
 
@@ -10,11 +9,11 @@ user_input = st.text_area("Enter your text:")
 
 
 # Function to load model and tokenizer using @st.cache_data
-@st.cache_data()
+@st.cache_data
 def load_model_and_tokenizer():
     model_name = "mrm8488/t5-base-finetuned-emotion"
-    tokenizer = AutoTokenizer.from_pretrained(model_name, use_fast=False)
-    model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
+    model = T5ForConditionalGeneration.from_pretrained(model_name)
+    tokenizer = T5Tokenizer.from_pretrained(model_name)
     return tokenizer, model
 
 
