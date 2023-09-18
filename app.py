@@ -1,33 +1,36 @@
-# Import necessary libraries
 import streamlit as st
-import transformers
 import torch
-from transformers import pipeline
+from transformers import AutoModelForSequenceClassification, AutoTokenizer, pipeline
 
-# Set up the Streamlit app
+# Set up Streamlit
 st.title("Emotion Detection with Transformers")
 
-# Create a text input widget
+# Text input
 user_input = st.text_area("Enter your text:")
 
+# Load the model and tokenizer using st.cache_data
+@st.cache_data(allow_output_mutation=True, suppress_st_warning=True)
+def load_model_and_tokenizer():
+    model_name = "distilbert-base-uncased"
+    model = AutoModelForSequenceClassification.from_pretrained(model_name)
+    tokenizer = AutoTokenizer.from_pretrained(model_name)
+    sentiment_analyzer = pipeline("sentiment-analysis", model=model, tokenizer=tokenizer)
+    return sentiment_analyzer
 
-# Define a function for sentiment analysis using transformers
-@st.cache_data
-def load_model():
-    return pipeline("sentiment-analysis")
+sentiment_analyzer = load_model_and_tokenizer()
 
+# Function to analyze emotion
+def analyze_emotion(text):
+    if text.strip() == "":
+        return "Please enter some text to analyze."
+    
+    result = sentiment_analyzer(text)
+    emotion = result[0]["label"]
+    confidence = result[0]["score"]
+    return f"Emotion: {emotion.capitalize()} (Confidence: {confidence:.2f})"
 
-# Load the sentiment analysis model
-sentiment_analyzer = load_model()
-
-# Create a button to analyze the emotion
+# Analyze button
 if st.button("Analyze Emotion"):
-    if user_input:
-        # Perform sentiment analysis on user input
-        result = sentiment_analyzer(user_input)
+    result = analyze_emotion(user_input)
+    st.write(result)
 
-        # Display the result
-        emotion = result[0]['label']
-        st.write(f"Emotion: {emotion}")
-    else:
-        st.warning("Please enter some text to analyze.")
