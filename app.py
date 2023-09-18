@@ -1,6 +1,8 @@
 import streamlit as st
 import torch
 from transformers import T5ForConditionalGeneration, T5Tokenizer
+import sentencepiece
+
 # Set up Streamlit
 st.title("Emotion Detection with Transformers")
 
