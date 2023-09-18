@@ -1,19 +1,27 @@
 import streamlit as st
-from transformers import AutoTokenizer, AutoModelForSequenceClassification
 import torch
+from transformers import AutoTokenizer, AutoModelForSequenceClassification, Trainer, TrainingArguments
+import pandas as pd
+import os
 
 # Set up Streamlit
-st.title("Emotion Detection with Transformers")
+st.title("Emotion Detection with Fine-Tuned Transformers")
 
 # Text input
 user_input = st.text_area("Enter your text:")
 
-# Function to load model and tokenizer using @st.cache_data
+# Function to load fine-tuned model and tokenizer using @st.cache_data
 @st.cache_data()
 def load_model_and_tokenizer():
-    model_name = "distilbert-base-uncased"
+    model_name = "bert-base-uncased"
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     model = AutoModelForSequenceClassification.from_pretrained(model_name)
+    
+    # Load the fine-tuned weights
+    fine_tuned_weights_path = "fine_tuned_emotion_model"
+    if os.path.exists(fine_tuned_weights_path):
+        model.load_state_dict(torch.load(fine_tuned_weights_path))
+    
     return tokenizer, model
 
 tokenizer, model = load_model_and_tokenizer()
@@ -30,7 +38,7 @@ def analyze_emotion(text):
     logits = outputs.logits
     predicted_class = torch.argmax(logits, dim=1).item()
     
-    # Emotion labels (customize as needed)
+    # Emotion labels
     emotion_labels = ["anger", "joy", "sadness", "neutral"]
     emotion = emotion_labels[predicted_class]
     
