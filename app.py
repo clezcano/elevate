@@ -9,7 +9,7 @@ st.title("Emotion Detection with Transformers")
 user_input = st.text_area("Enter your text:")
 
 # Load the model and tokenizer using st.cache_data
-@st.cache_data(allow_output_mutation=True, suppress_st_warning=True)
+@st.cache_data()
 def load_model_and_tokenizer():
     model_name = "distilbert-base-uncased"
     model = AutoModelForSequenceClassification.from_pretrained(model_name)
